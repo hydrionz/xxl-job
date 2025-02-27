@@ -55,12 +55,14 @@ public class XxlJobCompleter {
                 String[] childJobIds = xxlJobInfo.getChildJobId().split(",");
                 for (int i = 0; i < childJobIds.length; i++) {
                     int childJobId = (childJobIds[i]!=null && childJobIds[i].trim().length()>0 && isNumeric(childJobIds[i]))?Integer.valueOf(childJobIds[i]):-1;
-                    if (childJobId == xxlJobLog.getJobId()) {
-                        logger.info("jobid {} is self, ignore it.", childJobId);
-                        continue;
-                    }
                     if (childJobId > 0) {
+                        // valid
+                        if (childJobId == xxlJobLog.getJobId()) {
+                            logger.debug(">>>>>>>>>>> xxl-job, XxlJobCompleter-finishJob ignore childJobId,  childJobId {} is self.", childJobId);
+                            continue;
+                        }
 
+                        // trigger child job
                         JobTriggerPoolHelper.trigger(childJobId, TriggerTypeEnum.PARENT, -1, null, null, null);
                         ReturnT<String> triggerChildResult = ReturnT.SUCCESS;
 
